@@ -12,12 +12,15 @@ async function main() {
       }
       case 'nextSong': {
         Spicetify.Player.next();
+        break;
       }
       case 'prevSong': {
         Spicetify.Player.back();
+        break;
       }
       case 'togglePlay': {
         Spicetify.Player.togglePlay();
+        break;
       }
     }
     console.log(msg.data);

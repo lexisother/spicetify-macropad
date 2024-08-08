@@ -1,5 +1,6 @@
 const ws = require('ws');
 const net = require('net');
+const fs = require('fs');
 
 const SOCKETFILE = '/var/run/user/1000/spicetify.sock';
 let connections = [];
@@ -9,8 +10,11 @@ let SHUTDOWN = false;
 let socketServer;
 let wsServer = new ws.WebSocketServer({ port: 42069 });
 
+fs.existsSync(SOCKETFILE) && fs.unlinkSync(SOCKETFILE);
+
 wsServer
   .on('connection', (ws) => {
+    fs.existsSync(SOCKETFILE) && fs.unlinkSync(SOCKETFILE);
     socketServer = net
       .createServer((stream) => {
         let self = Date.now();
@@ -30,6 +34,7 @@ wsServer
   })
   .on('close', () => {
     socketServer.close();
+    fs.existsSync(SOCKETFILE) && fs.unlinkSync(SOCKETFILE);
   });
 
 process.on('SIGINT', () => {
@@ -47,6 +52,7 @@ process.on('SIGINT', () => {
     wsServer.clients.forEach((ws) => ws.close());
 
     socketServer && socketServer.close();
+    fs.existsSync(SOCKETFILE) && fs.unlinkSync(SOCKETFILE);
     wsServer.close();
     process.exit(0);
   }
